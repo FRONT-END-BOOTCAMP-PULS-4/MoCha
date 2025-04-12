@@ -1,4 +1,5 @@
 'use client';
+import Header from '@/app/components/shared/root-header';
 
 export default function MainLayout({
   children,
@@ -7,8 +8,8 @@ export default function MainLayout({
 }>) {
   return (
     <div>
-      <header className="h-12.5">헤더입니다</header>
-      <div>{children}</div>
+      <Header />
+      <div className="m-auto max-w-(--layout-w-base)">{children}</div>
     </div>
   );
 }
