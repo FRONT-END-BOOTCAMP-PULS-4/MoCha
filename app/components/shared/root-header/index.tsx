@@ -1,11 +1,17 @@
-import Link from 'next/link';
-import { CalendarDays, AlignJustify, AlarmClock, User, LogOut } from 'lucide-react';
+'use client';
+import { type ReactElement } from 'react';
+import { AlignJustify } from 'lucide-react';
+import { cn } from './lib/cn';
+import ButtonList from './ui/ButtonList';
+import useNavModal from './model/useNavModal';
 
-export default function RootHeader() {
+export default function RootHeader(): ReactElement {
+  const { isModal, toggleModal } = useNavModal();
+
   return (
     <header className="h-(--header-h-base) text-base">
       <div className="bg-main-bg @container fixed h-(--header-h-base) w-full shadow-md">
-        <div className="m-auto flex h-full max-w-(--layout-w-base) items-center justify-between px-4">
+        <div className="relative m-auto flex h-full max-w-(--layout-w-base) items-center justify-between px-4">
           {/* logo */}
           <div className="flex items-center">
             <span>Logo</span>
@@ -13,26 +19,22 @@ export default function RootHeader() {
 
           {/* button list */}
           <div className="text-gray-5">
-            <div className="hover:text-main flex gap-2 @3xl:hidden">
+            <div
+              className={cn("hover:text-main flex cursor-pointer gap-2 @3xl:hidden",{
+                "text-main": isModal
+              })}
+              onClick={toggleModal}
+            >
               <AlignJustify size={20} />
             </div>
+            {isModal && (
+              <div className="absolute right-0 bottom-0 left-0 translate-y-full bg-main-bg p-4 flex flex-col gap-4">
+                <ButtonList />
+              </div>
+            )}
+
             <div className="hidden gap-4 @3xl:flex">
-              <Link href="" className='hover:text-main flex gap-2'>
-                <CalendarDays size={20} />
-                <span>캘린더</span>
-              </Link>
-              <Link href="" className="hover:text-main flex gap-2">
-                <AlarmClock size={20} />
-                <span>챌린지</span>
-              </Link>
-              <Link href="" className="hover:text-main flex gap-2">
-                <User size={20} />
-                <span>마이페이지</span>
-              </Link>
-              <Link href="" className="hover:text-main flex gap-2">
-                <LogOut size={20} />
-                <span>로그인</span>
-              </Link>
+              <ButtonList/>
             </div>
           </div>
         </div>
