@@ -1,6 +1,6 @@
 "use client"
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
-import CategoryChart, {type CategoryChartProps} from '@/app/components/my-page/CategoryChart';
+import CategoryChart, {type CategoryChartProps} from '@/app/components/user/CategoryChart';
 
 export default function Mypage() {
 
