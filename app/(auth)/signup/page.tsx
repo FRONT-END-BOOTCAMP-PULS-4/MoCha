@@ -1,9 +1,10 @@
 'use client';
 
 import ErrorMessage from '@/app/components/auth/ErrorMessage';
-import Image from 'next/image';
 import Input from '@/app/components/shared/input/Input';
 import Label from '@/app/components/shared/label/Label';
+import LogoImage from '@/app/components/auth/LogoImage';
+import Title from '@/app/components/auth/Title';
 import { useState } from 'react';
 
 export default function SignupPage() {
@@ -17,13 +18,9 @@ export default function SignupPage() {
   return (
     <div>
       {/* 로고 */}
-      <div className="flex justify-center">
-        <Image src="/images/mocha_logo.svg" alt="Mocha_logo" width={120} height={30} />
-      </div>
+      <LogoImage />
       {/* 타이틀 */}
-      <div className="mb-8">
-        <h1 className="text-center text-xl font-semibold">회원가입</h1>
-      </div>
+      <Title>회원가입</Title>
       {/* 회원가입 폼 */}
       <form className="mb-4 flex flex-col gap-4">
         {/* 이메일 */}
