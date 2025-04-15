@@ -1,10 +1,19 @@
 'use client';
 
+import ErrorMessage from '@/app/components/auth/ErrorMessage';
 import Image from 'next/image';
 import Input from '@/app/components/shared/input/Input';
 import Label from '@/app/components/shared/label/Label';
+import { useState } from 'react';
 
-export default function page() {
+export default function SignupPage() {
+  const [emailError, setEmailError] = useState(true);
+  const [codeError, setCodeError] = useState(true);
+  const [passwordError, setPasswordError] = useState(true);
+  const [passwordCheckError, setPasswordCheckError] = useState(true);
+  const [nicknameError, setNicknameError] = useState(true);
+  const [phoneNumberError, setPhoneNumberError] = useState(true);
+
   return (
     <div>
       {/* 로고 */}
@@ -24,6 +33,7 @@ export default function page() {
             <Input placeholder="이메일을 입력해주세요." id="email" />
             <button className="w-full rounded-md bg-blue-100 px-3 py-2">인증번호 발송</button>
           </div>
+          <ErrorMessage>{emailError ? '이메일 에러입니다.' : ''}</ErrorMessage>
         </div>
         {/* 인증번호 확인 */}
         <div>
@@ -32,6 +42,7 @@ export default function page() {
             <Input placeholder="인증번호를 입력해주세요." id="code" />
             <button className="w-full rounded-md bg-blue-100 px-3 py-2">인증번호 확인</button>
           </div>
+          <ErrorMessage>{codeError ? '코드 에러입니다.' : ''}</ErrorMessage>
         </div>
         {/* 비밀번호 */}
         <div>
@@ -44,6 +55,7 @@ export default function page() {
               type="password"
             />
           </div>
+          <ErrorMessage>{passwordError ? '비밀번호 에러입니다.' : ''}</ErrorMessage>
         </div>
         {/* 비밀번호 확인*/}
         <div>
@@ -56,6 +68,7 @@ export default function page() {
               type="password"
             />
           </div>
+          <ErrorMessage>{passwordCheckError ? '비밀번호 확인 에러입니다.' : ''}</ErrorMessage>
         </div>
         {/* 닉네임 */}
         <div>
@@ -64,6 +77,7 @@ export default function page() {
             <Input placeholder="닉네임을 입력해주세요." id="nickname" />
             <button className="w-full rounded-md bg-blue-100 px-3 py-2">중복 확인</button>
           </div>
+          <ErrorMessage>{nicknameError ? '닉네임 에러입니다.' : ''}</ErrorMessage>
         </div>
         {/* 전화번호 */}
         <div>
@@ -71,6 +85,7 @@ export default function page() {
           <div className="flex gap-2">
             <Input placeholder="전화번호를 입력해주세요." id="phone_number" className="w-full" />
           </div>
+          <ErrorMessage>{phoneNumberError ? '전화번호 에러입니다.' : ''}</ErrorMessage>
         </div>
       </form>
       {/* 버튼 */}
