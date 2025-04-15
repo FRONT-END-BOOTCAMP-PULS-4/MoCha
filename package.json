@@ -9,10 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
+    "@fullcalendar/react": "^6.1.17",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
