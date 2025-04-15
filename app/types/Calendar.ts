@@ -14,3 +14,7 @@ export type SummaryHeaderProps = {
     totalExpense: number;
   };
 };
+
+export type FloatingButtonProps = {
+  onClick: () => void;
+};
