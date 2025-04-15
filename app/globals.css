@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
-:root{
+:root {
   --layout-w-base: 1440px;
+  --layout-w-auth: 375px;
   --header-h-base: 3.125rem;
 }
 

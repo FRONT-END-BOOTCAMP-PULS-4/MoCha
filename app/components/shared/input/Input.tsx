@@ -7,9 +7,10 @@ type InputProps = {
   placeholder?: string;
   error?: boolean;
   id?: string;
+  type?: string;
 };
 
-export default function Input({ className, placeholder, error, id }: InputProps) {
+export default function Input({ className, placeholder, error, id, type = 'text' }: InputProps) {
   return (
     <input
       className={cn(
@@ -17,7 +18,7 @@ export default function Input({ className, placeholder, error, id }: InputProps)
         error ? 'border-error' : 'border-gray-4',
         className
       )}
-      type="text"
+      type={type}
       placeholder={placeholder}
       id={id}
     />
