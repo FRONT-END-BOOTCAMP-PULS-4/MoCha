@@ -1,39 +1,44 @@
 'use client';
 
+import ErrorMessage from '@/app/components/auth/ErrorMessage';
 import Image from 'next/image';
 import Input from '@/app/components/shared/input/Input';
 import Label from '@/app/components/shared/label/Label';
+import Link from 'next/link';
+import LogoImage from '@/app/components/auth/LogoImage';
+import Title from '@/app/components/auth/Title';
+import { useState } from 'react';
 
-export default function page() {
+export default function LoginPage() {
+  const [emailError, setEmailError] = useState(true);
+  const [loginError, setLoginError] = useState(true);
   return (
     <div>
       {/* 로고 */}
-      <div className="flex justify-center">
-        <Image src="/images/mocha_logo.svg" alt="Mocha_logo" width={120} height={30} />
-      </div>
+      <LogoImage />
       {/* 타이틀 */}
-      <div className="mb-8">
-        <h1 className="text-center text-xl font-semibold">로그인</h1>
-      </div>
+      <Title>로그인</Title>
       {/* 로그인 폼 */}
       <form className="mb-4 flex flex-col gap-4">
         {/* 이메일 */}
         <div>
           <Label label="이메일" htmlFor="email" />
-          <div className="flex gap-2">
+          <div>
             <Input placeholder="이메일을 입력해주세요." id="email" className="w-full" />
+            <ErrorMessage>{emailError ? '이메일 에러입니다.' : ''}</ErrorMessage>
           </div>
         </div>
         {/* 비밀번호 */}
         <div>
           <Label label="비밀번호" htmlFor="password" />
-          <div className="flex gap-2">
+          <div>
             <Input
               placeholder="비밀번호를 입력해주세요."
               id="password"
               className="w-full"
               type="password"
             />
+            <ErrorMessage>{loginError ? '로그인 에러입니다.' : ''}</ErrorMessage>
           </div>
         </div>
       </form>
@@ -43,11 +48,17 @@ export default function page() {
       </div>
       {/* 회원가입, 아이디 찾기, 비밀번호 찾기 */}
       <div className="flex justify-center gap-4 text-sm">
-        <button className="hover:cursor-pointer">회원가입</button>
+        <Link href="/signup" className="hover:cursor-pointer">
+          회원가입
+        </Link>
         <span>|</span>
-        <button className="hover:cursor-pointer">아이디 찾기</button>
+        <Link href="/find-in" className="hover:cursor-pointer">
+          아이디 찾기
+        </Link>
         <span>|</span>
-        <button className="hover:cursor-pointer">비밀번호 찾기</button>
+        <Link href="/find-password" className="hover:cursor-pointer">
+          비밀번호 찾기
+        </Link>
       </div>
       {/* 간편 로그인 */}
       <div>
