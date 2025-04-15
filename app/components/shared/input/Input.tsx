@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '../root-header/lib/cn';
 
 type InputProps = {

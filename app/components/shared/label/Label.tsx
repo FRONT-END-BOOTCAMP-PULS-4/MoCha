@@ -1,3 +1,5 @@
+'use client';
+
 type LabelProps = {
   label: string;
   htmlFor?: string;
