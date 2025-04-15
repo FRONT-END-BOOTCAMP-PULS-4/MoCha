@@ -1,5 +1,6 @@
 'use client';
 
+import ErrorMessage from '@/app/components/auth/ErrorMessage';
 import Input from '@/app/components/shared/input/Input';
 import Label from '@/app/components/shared/label/Label';
 import LogoImage from '@/app/components/auth/LogoImage';
@@ -23,9 +24,7 @@ export default function FindIdPage() {
           <Label label="닉네임" htmlFor="nickname" />
           <div>
             <Input placeholder="닉네임을 입력해주세요." id="nickname" className="mb-1 w-full" />
-            <div className="text-error min-h-[16px] text-xs">
-              {nicknameError ? '닉네임 에러입니다.' : ''}
-            </div>
+            <ErrorMessage>{nicknameError ? '닉네임 에러입니다.' : ''}</ErrorMessage>
           </div>
         </div>
         {/* 전화번호 */}
@@ -37,9 +36,7 @@ export default function FindIdPage() {
               id="phone_number"
               className="mb-1 w-full"
             />
-            <div className="text-error min-h-[16px] text-xs">
-              {phoneNumberError ? '전화번호 에러입니다.' : ''}
-            </div>
+            <ErrorMessage>{phoneNumberError ? '전화번호 에러입니다.' : ''}</ErrorMessage>
           </div>
         </div>
       </form>
