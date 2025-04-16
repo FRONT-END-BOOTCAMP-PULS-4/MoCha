@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 type DailyData = {
   date: string;
   income: number;
@@ -21,4 +23,10 @@ export type FloatingButtonProps = {
 
 export type IncomeExpenseFormProps = {
   onClose: () => void;
+};
+
+export type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  children: ReactNode;
 };
