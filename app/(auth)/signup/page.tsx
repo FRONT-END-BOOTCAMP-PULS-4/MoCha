@@ -36,6 +36,8 @@ export default function SignupPage() {
   const [codeSent, setCodeSent] = useState(false); // 인증번호 발송 여부
   const [code, setCode] = useState('');
 
+  const [verificationToken, setVerificationToken] = useState('');
+
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
 
@@ -94,10 +96,11 @@ export default function SignupPage() {
     }
   };
 
-  const handleSendVerificationCode = async () => {
+  // 인증번호 발송
+  const handleSendCode = async () => {
     if (errors.email || !isValidEmail(user.email)) {
       setErrors((prev) => ({ ...prev, email: 'invalid' }));
-      setCodeSent(false); // 실패 시 초기화
+      setCodeSent(false);
       return;
     }
 
@@ -108,10 +111,13 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
       });
 
+      const data = await res.json();
+
       if (res.status === 409) {
         setErrors((prev) => ({ ...prev, email: 'duplicated' }));
         setCodeSent(false);
-      } else {
+      } else if (res.ok && data.token) {
+        setVerificationToken(data.token);
         setErrors((prev) => ({ ...prev, email: '' }));
         setCodeSent(true);
       }
@@ -121,11 +127,34 @@ export default function SignupPage() {
     }
   };
 
-  const handleVerifyCode = () => {
-    if (code === '123456') {
-      setErrors((prev) => ({ ...prev, code: false }));
-      setIsCodeVerified(true);
-    } else {
+  // 인증번호 확인
+  const handleVerifyCode = async () => {
+    if (!verificationToken || !code) {
+      alert('인증번호가 발송되지 않았거나 입력되지 않았습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        body: JSON.stringify({
+          token: verificationToken,
+          code: code,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.verified) {
+        setErrors((prev) => ({ ...prev, code: false }));
+        setIsCodeVerified(true);
+      } else {
+        setErrors((prev) => ({ ...prev, code: true }));
+        setIsCodeVerified(false);
+      }
+    } catch (err) {
+      console.error('인증번호 확인 실패:', err);
       setErrors((prev) => ({ ...prev, code: true }));
       setIsCodeVerified(false);
     }
@@ -218,7 +247,7 @@ export default function SignupPage() {
             <button
               type="button"
               className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
-              onClick={handleSendVerificationCode}
+              onClick={handleSendCode}
               disabled={errors.email === 'invalid' || !isValidEmail(user.email)}
             >
               인증번호 발송
