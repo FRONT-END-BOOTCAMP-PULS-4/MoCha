@@ -5,7 +5,7 @@ import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
-import { isValidEmail } from '@/app/utils/validation';
+import { isValidEmail } from '@/app/shared/utils/validation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';

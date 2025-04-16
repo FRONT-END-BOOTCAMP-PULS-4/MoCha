@@ -6,7 +6,7 @@ import {
   isValidNickname,
   isValidPassword,
   isValidPhoneNumber,
-} from '@/app/utils/validation';
+} from '@/app/shared/utils/validation';
 import { ChangeEvent, useState } from 'react';
 
 import LogoImage from '@/app/components/auth/LogoImage';
