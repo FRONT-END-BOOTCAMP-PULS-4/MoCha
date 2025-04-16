@@ -5,28 +5,37 @@
   --layout-w-auth: 375px;
   --header-h-base: 3.125rem;
 
-  /* // 급여/보너스/이자수익/배당수익/용돈/판매수입/기타 */
-/* // 식비/주거비/교통비/통신비/의료비/보험료/교육비/생활비/기타 */
-  --category-salary: #4CAF50;
-  --category-bonus: #81C784;
-  --category-interest: #2196F3;
-  --category-dividend: #64B5F6;
-  --category-allowance: #FFB74D;
-  --category-sales: #A1887F;
-  --category-food: #F44336;
-  --category-housing: #E57373;
-  --category-transportation: #FF9800;
-  --category-communication: #FFB74D;
-  --category-medical: #9C27B0;
-  --category-insurance: #BA68C8;
-  --category-education: #3F51B5;
-  --category-living: #64B5F6;
-  --category-other: #9E9E9E;
+  /* 급여/투자수익/용돈/판매수입/기타 */
+  --category-salary: #4caf50;
+  --category-investment: #2196f3;
+  --category-allowance: #ffb74d;
+  --category-sales: #a1887f;
+  /* 식비/생활/교통/통신/의료/쇼핑/교육/문화&여가/경조사/기타 */
+  --category-food: #f44336;
+  --category-housing: #e57373;
+  --category-transportation: #ff9800;
+  --category-communication: #ffb74d;
+  --category-medical: #9c27b0;
+  --category-shopping: #ba68c8;
+  --category-education: #3f51b5;
+  --category-culture: #64b5f6;
+  --category-event: #5be5c3;
+  --category-other: #9e9e9e;
 }
 
 @layer base {
   * {
     font-family: './font/Pretendard-Medium.woff2';
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
   }
 }
 

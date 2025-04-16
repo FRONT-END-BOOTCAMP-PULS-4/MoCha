@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import FloatingButton from '../components/main/FloatingButton';
 import FullCalendarWrapper from '../components/main/FullCalendarWrapper';
+import Modal from '../components/main/modal/TransactionModal';
 import SummaryHeader from '../components/main/SummaryHeader';
+import IncomeExpenseForm from '../components/main/modal/IncomeExpenseForm';
 
 const mockData = {
   summary: {
@@ -20,11 +23,17 @@ const mockData = {
 };
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="">
       <SummaryHeader summary={mockData.summary} />
       <FullCalendarWrapper daily={mockData.daily} />
-      <FloatingButton onClick={() => alert('내역 추가 버튼 클릭됨!')} />
+      <FloatingButton onClick={() => setIsModalOpen(true)} />
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <IncomeExpenseForm onClose={() => setIsModalOpen(false)} />
+      </Modal>
     </div>
   );
 }
