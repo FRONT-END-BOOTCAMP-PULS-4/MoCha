@@ -1,16 +1,13 @@
 'use client';
 
-import { cn } from '../ui/root-header/lib/cn';
+import { InputHTMLAttributes } from 'react';
+import { cn } from '../../utils/cn';
 
 type InputProps = {
-  className?: string;
-  placeholder?: string;
-  error?: boolean;
-  id?: string;
-  type?: string;
-};
+  error?: string | boolean;
+} & InputHTMLAttributes<HTMLInputElement>;
 
-export default function Input({ className, placeholder, error, id, type = 'text' }: InputProps) {
+export default function Input({ className, error, ...props }: InputProps) {
   return (
     <input
       className={cn(
@@ -18,9 +15,7 @@ export default function Input({ className, placeholder, error, id, type = 'text'
         error ? 'border-error' : 'border-gray-4',
         className
       )}
-      type={type}
-      placeholder={placeholder}
-      id={id}
+      {...props}
     />
   );
 }
