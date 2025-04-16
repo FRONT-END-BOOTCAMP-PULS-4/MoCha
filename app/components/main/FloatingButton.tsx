@@ -1,4 +1,4 @@
-import { FloatingButtonProps } from '@/app/types/Calendar';
+import { FloatingButtonProps } from '@/app/shared/types/Calendar';
 import { Plus } from 'lucide-react';
 
 export default function FloatingButton({ onClick }: FloatingButtonProps) {

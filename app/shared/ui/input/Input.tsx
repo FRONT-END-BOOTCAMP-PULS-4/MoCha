@@ -1,7 +1,7 @@
 'use client';
 
 import { InputHTMLAttributes } from 'react';
-import { cn } from '../root-header/lib/cn';
+import { cn } from '../../utils/cn';
 
 type InputProps = {
   error?: string | boolean;
