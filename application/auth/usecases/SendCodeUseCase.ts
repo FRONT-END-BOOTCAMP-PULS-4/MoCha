@@ -7,7 +7,7 @@ export class SendCodeUseCase {
 
   async execute(email: string): Promise<string> {
     const { data: existingUser } = await supabase
-      .from('users')
+      .from('user')
       .select('id')
       .eq('email', email)
       .single();
