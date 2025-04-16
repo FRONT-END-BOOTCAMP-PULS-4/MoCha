@@ -1,7 +1,7 @@
 'use client';
 import { type ReactElement } from 'react';
 import { AlignJustify } from 'lucide-react';
-import { cn } from './lib/cn';
+import { cn } from '../../utils/cn';
 import ButtonList from './ui/ButtonList';
 import useNavModal from './model/useNavModal';
 
@@ -10,7 +10,7 @@ export default function RootHeader(): ReactElement {
 
   return (
     <header className="h-(--header-h-base) text-base">
-      <div className="bg-main-bg @container fixed h-(--header-h-base) w-full shadow-md">
+      <div className="bg-main-bg @container fixed z-10 h-(--header-h-base) w-full shadow-md">
         <div className="relative m-auto flex h-full max-w-(--layout-w-base) items-center justify-between px-4">
           {/* logo */}
           <div className="flex items-center">

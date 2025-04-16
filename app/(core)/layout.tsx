@@ -1,5 +1,5 @@
 'use client';
-import Header from '@/app/components/shared/root-header';
+import Header from '@/app/shared/ui/root-header';
 
 export default function MainLayout({
   children,
