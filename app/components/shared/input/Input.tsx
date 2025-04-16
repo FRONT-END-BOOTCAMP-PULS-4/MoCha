@@ -4,7 +4,7 @@ import { InputHTMLAttributes } from 'react';
 import { cn } from '../root-header/lib/cn';
 
 type InputProps = {
-  error?: boolean;
+  error?: string | boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 export default function Input({ className, error, ...props }: InputProps) {
