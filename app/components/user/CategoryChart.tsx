@@ -2,7 +2,7 @@
 import { type ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { type CategoryChartProps } from './types';
+import { type CategoryChartProps } from '../../types/Category';
 
 const ResponsiveContainer = dynamic(
   () => import('recharts').then((comp) => comp.ResponsiveContainer),

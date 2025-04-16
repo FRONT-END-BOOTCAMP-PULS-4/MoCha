@@ -2,7 +2,7 @@
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import CategoryChart from '@/app/components/user/CategoryChart';
 import CategoryList from '@/app/components/user/CategoryList';
-import { type Category } from '@/app/components/user/types';
+import { type Category } from '@/app/types/Category';
 
 export default function Mypage() {
   const data1: Category[] = [
