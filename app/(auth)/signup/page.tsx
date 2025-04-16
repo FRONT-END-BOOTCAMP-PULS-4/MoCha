@@ -1,10 +1,28 @@
 'use client';
 
+import {
+  doPasswordsMatch,
+  isValidEmail,
+  isValidNickname,
+  isValidPassword,
+  isValidPhoneNumber,
+} from '@/app/utils/validation';
+import { ChangeEvent, useState } from 'react';
+
 import LogoImage from '@/app/components/auth/LogoImage';
+import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
-import Input from '@/app/components/shared/input/Input';
-import Label from '@/app/components/shared/label/Label';
-import { useState } from 'react';
+import Input from '@/app/shared/ui/input/Input';
+import Label from '@/app/shared/ui/label/Label';
+
+export const errorMessages = {
+  email: '유효한 이메일 주소를 입력해주세요.',
+  code: '인증번호가 올바르지 않습니다.',
+  password: '8~20자, 영문과 숫자를 포함해 입력해주세요.',
+  passwordCheck: '비밀번호가 일치하지 않습니다.',
+  nickname: '2~8자의 한글, 영문, 숫자만 사용할 수 있어요.',
+  phoneNumber: '숫자만 입력해주세요. (예: 01012345678)',
+};
 
 export default function SignupPage() {
   const [user, setUser] = useState({

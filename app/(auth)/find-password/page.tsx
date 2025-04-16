@@ -1,9 +1,12 @@
 'use client';
 
+import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/utils/validation';
+
 import LogoImage from '@/app/components/auth/LogoImage';
+import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
-import Input from '@/app/components/shared/input/Input';
-import Label from '@/app/components/shared/label/Label';
+import Input from '@/app/shared/ui/input/Input';
+import Label from '@/app/shared/ui/label/Label';
 import { useState } from 'react';
 import { errorMessages } from '../signup/page';
 
