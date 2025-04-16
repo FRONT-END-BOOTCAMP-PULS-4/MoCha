@@ -1,32 +1,31 @@
-"use client"
+'use client';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
-import CategoryChart, {type CategoryChartProps} from '@/app/components/user/CategoryChart';
+import CategoryChart from '@/app/components/user/CategoryChart';
+import CategoryList from '@/app/components/user/CategoryList';
+import { type Category } from '@/app/components/user/types';
 
 export default function Mypage() {
+  const data1: Category[] = [
+    { name: '급여', price: 3000000, category: 'salary' },
+    { name: '보너스', price: 500000, category: 'bonus' },
+    { name: '이자수익', price: 3000000, category: 'interest' },
+    { name: '배당수익', price: 1500000, category: 'dividend' },
+    { name: '용돈', price: 200000, category: 'allowance' },
+    { name: '판매수입', price: 50000, category: 'sales' },
+    { name: '기타', price: 210000, category: 'other' },
+  ];
 
-  const data1:CategoryChartProps[] = [
-      { name: '급여', price: 100, category: "salary"},
-      { name: '보너스', price: 100, category: "bonus"},
-      { name: '이자수익', price: 100, category: "interest"},
-      { name: '배당수익', price: 100, category: "dividend"},
-      { name: '용돈', price: 100, category: "allowance"},
-      { name: '판매수입', price: 100, category: "sales"},
-      { name: '기타', price: 100, category: "other"},
-    ];
-
-  const data2: CategoryChartProps[] = [
-      { name: '식비', price: 100, category: "food"},
-      { name: '주거비', price: 100, category: "housing"},
-      { name: '교통비', price: 100, category: "transportation"},
-      { name: '통신비', price: 100, category: "communication"},
-      { name: '의료비', price: 100, category: "medical"},
-      { name: '보험료', price: 100, category: "insurance"},
-      { name: '교육비', price: 100, category: "education"},
-      { name: '생활비', price: 100, category: "living"},
-      { name: '기타', price: 100, category: "other"},
-    ];
-
-  
+  const data2: Category[] = [
+    { name: '식비', price: 40000, category: 'food' },
+    { name: '주거비', price: 500000, category: 'housing' },
+    { name: '교통비', price: 20000, category: 'transportation' },
+    { name: '통신비', price: 50000, category: 'communication' },
+    { name: '의료비', price: 200000, category: 'medical' },
+    { name: '보험료', price: 70000, category: 'insurance' },
+    { name: '교육비', price: 400000, category: 'education' },
+    { name: '생활비', price: 1000000, category: 'living' },
+    { name: '기타', price: 50000, category: 'other' },
+  ];
 
   return (
     <main className="flex flex-col gap-4 p-4 text-base">
@@ -49,9 +48,23 @@ export default function Mypage() {
             <ArrowBigRight />
           </div>
         </div>
-        <CategoryChart categoryList={data1}/>
-        <CategoryChart categoryList={data2}/>
-        {/* <div>막대 그래프</div> */}
+
+        <div className='md:flex md:gap-3'>
+
+          <div className="grow basis-0 flex flex-col items-center">
+            <div className="size-40">
+              <CategoryChart categoryList={data1} />
+            </div>
+            <CategoryList categoryList={data1} />
+          </div>
+
+          <div className="grow basis-0 flex flex-col items-center">
+            <div className="size-40">
+              <CategoryChart categoryList={data2} />
+            </div>
+            <CategoryList categoryList={data2} />
+          </div>
+        </div>
       </div>
     </main>
   );
