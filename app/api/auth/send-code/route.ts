@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { SendVerificationCodeUseCase } from '@/application/auth/usecases/SendVerificationCodeUseCase';
+import { SendCodeUseCase } from '@/application/auth/usecases/SendCodeUseCase';
 import { NodemailerEmailService } from '@/infra/auth/services/NodemailerEmailService';
 
 export async function POST(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     // 유스케이스 실행
     const emailService = new NodemailerEmailService();
-    const usecase = new SendVerificationCodeUseCase(emailService);
+    const usecase = new SendCodeUseCase(emailService);
 
     const token = await usecase.execute(email);
 

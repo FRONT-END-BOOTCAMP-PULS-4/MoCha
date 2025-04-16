@@ -2,7 +2,7 @@ import { supabase } from '@/app/shared/lib/supabase';
 import { createVerificationToken } from '@/app/shared/lib/verification-jwt';
 import { EmailService } from '@/domain/auth/services/EmailService';
 
-export class SendVerificationCodeUseCase {
+export class SendCodeUseCase {
   constructor(private readonly emailService: EmailService) {}
 
   async execute(email: string): Promise<string> {
