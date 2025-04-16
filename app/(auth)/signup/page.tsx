@@ -33,7 +33,9 @@ export default function SignupPage() {
     phoneNumber: '',
   });
 
+  const [codeSent, setCodeSent] = useState(false); // 인증번호 발송 여부
   const [code, setCode] = useState('');
+
   const [isCodeVerified, setIsCodeVerified] = useState(false);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
 
@@ -95,6 +97,7 @@ export default function SignupPage() {
   const handleSendVerificationCode = async () => {
     if (errors.email || !isValidEmail(user.email)) {
       setErrors((prev) => ({ ...prev, email: 'invalid' }));
+      setCodeSent(false); // 실패 시 초기화
       return;
     }
 
@@ -107,11 +110,14 @@ export default function SignupPage() {
 
       if (res.status === 409) {
         setErrors((prev) => ({ ...prev, email: 'duplicated' }));
+        setCodeSent(false);
       } else {
         setErrors((prev) => ({ ...prev, email: '' }));
+        setCodeSent(true);
       }
     } catch (err) {
       console.error('이메일 인증 요청 실패:', err);
+      setCodeSent(false);
     }
   };
 
@@ -225,6 +231,11 @@ export default function SignupPage() {
                 : errors.email === 'duplicated'
                   ? '이미 존재하는 계정입니다.'
                   : ''
+            }
+            successMessage={
+              isValidEmail(user.email) && errors.email === '' && codeSent
+                ? '인증번호가 발송되었습니다.'
+                : ''
             }
           />
         </div>
