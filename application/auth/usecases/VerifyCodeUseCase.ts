@@ -1,4 +1,4 @@
-import { verifyVerificationToken } from '@/app/shared/lib/verification-jwt';
+import { verifyVerificationToken } from './SendCodeUseCase';
 
 export class VerifyCodeUseCase {
   execute(token: string, inputCode: string): boolean {

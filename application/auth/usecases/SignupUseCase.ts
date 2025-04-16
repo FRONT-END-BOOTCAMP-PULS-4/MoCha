@@ -1,8 +1,8 @@
-import { verifyVerificationToken } from '@/app/shared/lib/verification-jwt';
 import { SignupDto } from '@/domain/auth/dto/SignupDto';
 import { User } from '@/domain/auth/entities/User';
 import { UserRepository } from '@/domain/auth/repositories/UserRepository';
 import bcrypt from 'bcryptjs';
+import { verifyVerificationToken } from './SendCodeUseCase';
 
 export class SignupUseCase {
   constructor(private readonly userRepository: UserRepository) {}
