@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '../root-header/lib/cn';
+import { cn } from '../ui/root-header/lib/cn';
 
 type InputProps = {
   className?: string;

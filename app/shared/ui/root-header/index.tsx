@@ -1,7 +1,7 @@
 'use client';
 import { type ReactElement } from 'react';
 import { AlignJustify } from 'lucide-react';
-import { cn } from './lib/cn';
+import { cn } from '../../utils/cn';
 import ButtonList from './ui/ButtonList';
 import useNavModal from './model/useNavModal';
 

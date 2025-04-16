@@ -1,7 +1,7 @@
 'use client';
 import { type ReactElement } from 'react';
 import { Dot } from 'lucide-react'
-import { type CategoryListProps} from '../../types/Category';
+import { type CategoryListProps} from '../../shared/types/Category';
 
 export default function CategoryList(props: CategoryListProps): ReactElement {
     const { categoryList, className = 'text-black' } = props;

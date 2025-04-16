@@ -1,8 +1,8 @@
 'use client';
 
 import ErrorMessage from '@/app/components/auth/ErrorMessage';
-import Input from '@/app/components/shared/input/Input';
-import Label from '@/app/components/shared/label/Label';
+import Input from '@/app/shared/input/Input';
+import Label from '@/app/shared/ui/label/Label';
 import LogoImage from '@/app/components/auth/LogoImage';
 import Title from '@/app/components/auth/Title';
 import { useState } from 'react';

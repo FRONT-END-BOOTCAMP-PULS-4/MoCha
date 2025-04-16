@@ -1,6 +1,6 @@
 'use client';
 
-import { SummaryHeaderProps } from '@/app/types/Calendar';
+import { SummaryHeaderProps } from '@/app/shared/types/Calendar';
 
 export default function SummaryHeader({ summary }: SummaryHeaderProps) {
   const { totalIncome, totalExpense } = summary;

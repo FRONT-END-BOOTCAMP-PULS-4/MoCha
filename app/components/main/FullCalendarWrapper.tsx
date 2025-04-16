@@ -3,7 +3,7 @@
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { useMemo } from 'react';
-import { FullCalendarWrapperProps } from '@/app/types/Calendar';
+import { FullCalendarWrapperProps } from '@/app/shared/types/Calendar';
 
 export default function FullCalendarWrapper({ daily }: FullCalendarWrapperProps) {
   const events = useMemo(() => {
