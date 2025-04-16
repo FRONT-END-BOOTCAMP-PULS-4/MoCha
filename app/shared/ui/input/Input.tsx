@@ -7,7 +7,7 @@ type InputProps = {
   error?: string | boolean;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-export default function Input({ className, error, ...props }: InputProps) {
+export default function Input({ className, error, type = 'text', ...props }: InputProps) {
   return (
     <input
       className={cn(
@@ -15,6 +15,7 @@ export default function Input({ className, error, ...props }: InputProps) {
         error ? 'border-error' : 'border-gray-4',
         className
       )}
+      type={type}
       {...props}
     />
   );
