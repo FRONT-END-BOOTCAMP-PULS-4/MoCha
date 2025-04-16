@@ -1,58 +1,141 @@
 'use client';
 
-import ErrorMessage from '@/app/components/auth/ErrorMessage';
-import Image from 'next/image';
+import LogoImage from '@/app/components/auth/LogoImage';
+import MessageZone from '@/app/components/auth/MessageZone';
+import Title from '@/app/components/auth/Title';
 import Input from '@/app/components/shared/input/Input';
 import Label from '@/app/components/shared/label/Label';
+import { isValidEmail } from '@/app/utils/validation';
+import Image from 'next/image';
 import Link from 'next/link';
-import LogoImage from '@/app/components/auth/LogoImage';
-import Title from '@/app/components/auth/Title';
 import { useState } from 'react';
+import { errorMessages } from '../signup/page';
 
 export default function LoginPage() {
-  const [emailError, setEmailError] = useState(true);
-  const [loginError, setLoginError] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({
+    email: false,
+    password: false,
+    login: false,
+  });
+
+  const isFormValid = isValidEmail(email) && password.trim().length > 0;
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    setErrors((prev) => ({
+      ...prev,
+      email: !isValidEmail(value),
+      login: false,
+    }));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    setErrors((prev) => ({
+      ...prev,
+      password: value.trim().length === 0,
+      login: false,
+    }));
+  };
+
+  const handleLogin = async () => {
+    const emailValid = isValidEmail(email);
+    const passwordValid = password.trim().length > 0;
+
+    if (!emailValid || !passwordValid) {
+      setErrors((prev) => ({
+        ...prev,
+        email: !emailValid,
+        password: !passwordValid,
+      }));
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        setErrors((prev) => ({ ...prev, login: true }));
+        return;
+      }
+
+      // 성공 시 처리 (예: redirect)
+    } catch (error) {
+      console.error('로그인 실패:', error);
+      setErrors((prev) => ({ ...prev, login: true }));
+    }
+  };
+
   return (
     <div>
-      {/* 로고 */}
       <LogoImage />
-      {/* 타이틀 */}
       <Title>로그인</Title>
-      {/* 로그인 폼 */}
-      <form className="mb-4 flex flex-col gap-4">
+
+      <form className="mb-4 flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
         {/* 이메일 */}
         <div>
           <Label label="이메일" htmlFor="email" />
-          <div>
-            <Input placeholder="이메일을 입력해주세요." id="email" className="w-full" />
-            <ErrorMessage>{emailError ? '이메일 에러입니다.' : ''}</ErrorMessage>
-          </div>
+          <Input
+            placeholder="이메일을 입력해주세요."
+            id="email"
+            className="w-full"
+            value={email}
+            onChange={handleEmailChange}
+            error={errors.email}
+          />
+          <MessageZone errorMessage={errors.email ? errorMessages.email : ''} />
         </div>
+
         {/* 비밀번호 */}
         <div>
           <Label label="비밀번호" htmlFor="password" />
-          <div>
-            <Input
-              placeholder="비밀번호를 입력해주세요."
-              id="password"
-              className="w-full"
-              type="password"
-            />
-            <ErrorMessage>{loginError ? '로그인 에러입니다.' : ''}</ErrorMessage>
-          </div>
+          <Input
+            placeholder="비밀번호를 입력해주세요."
+            id="password"
+            className="w-full"
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+            error={errors.password}
+          />
+          <MessageZone
+            errorMessage={
+              errors.password
+                ? errorMessages.password
+                : errors.login
+                  ? '이메일 또는 비밀번호가 올바르지 않습니다.'
+                  : ''
+            }
+          />
         </div>
       </form>
+
       {/* 로그인 버튼 */}
       <div className="mb-4">
-        <button className="w-full rounded-md bg-blue-100 px-3 py-2">로그인</button>
+        <button
+          className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+          disabled={!isFormValid}
+          onClick={handleLogin}
+        >
+          로그인
+        </button>
       </div>
-      {/* 회원가입, 아이디 찾기, 비밀번호 찾기 */}
+
+      {/* 하단 링크 */}
       <div className="flex justify-center gap-4 text-sm">
         <Link href="/signup" className="hover:cursor-pointer">
           회원가입
         </Link>
         <span>|</span>
-        <Link href="/find-in" className="hover:cursor-pointer">
+        <Link href="/find-id" className="hover:cursor-pointer">
           아이디 찾기
         </Link>
         <span>|</span>
@@ -60,6 +143,7 @@ export default function LoginPage() {
           비밀번호 찾기
         </Link>
       </div>
+
       {/* 간편 로그인 */}
       <div>
         <div className="my-6 flex items-center">
