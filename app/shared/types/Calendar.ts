@@ -18,3 +18,7 @@ export type SummaryHeaderProps = {
 export type FloatingButtonProps = {
   onClick: () => void;
 };
+
+export type IncomeExpenseFormProps = {
+  onClose: () => void;
+};
