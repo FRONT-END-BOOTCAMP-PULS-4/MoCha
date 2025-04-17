@@ -1,17 +1,17 @@
 'use client';
 
+import Image from 'next/image';
+import Input from '@/app/shared/ui/input/Input';
+import Label from '@/app/shared/ui/label/Label';
+import Link from 'next/link';
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
-import { useAuthStore } from '@/app/shared/stores/authStore';
-import Input from '@/app/shared/ui/input/Input';
-import Label from '@/app/shared/ui/label/Label';
+import { errorMessages } from '../signup/page';
 import { isValidEmail } from '@/app/shared/utils/validation';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useAuthStore } from '@/app/shared/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { errorMessages } from '../signup/page';
 
 export default function LoginPage() {
   const router = useRouter();
