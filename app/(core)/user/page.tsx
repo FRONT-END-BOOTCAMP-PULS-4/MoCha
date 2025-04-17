@@ -2,7 +2,8 @@
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import CategoryChart from '@/app/components/user/CategoryChart';
 import CategoryList from '@/app/components/user/CategoryList';
-import { type Category } from '@/app/shared/types/Category';
+import PeriodBarChart from '@/app/components/user/PeriodBarChart'
+import { type Category, type Period } from '@/app/shared/types/Chart';
 
 export default function Mypage() {
   const data1: Category[] = [
@@ -27,9 +28,18 @@ export default function Mypage() {
     { name: '기타', price: 50000, category: 'other' },
   ];
 
+  const bardata:Period[] = [
+      { name: '1월', income: 30000000, expense: 1500000 },
+      { name: '2월', income: 3500000, expense: 1500000 },
+      { name: '3월', income: 3200000, expense: 1500000 },
+      { name: '4월', income: 2800000, expense: 1500000 },
+      { name: '5월', income: 3000000, expense: 1500000 },
+      { name: '6월', income: 4000000, expense: 1500000 },
+    ];
+
   return (
-    <main className="flex flex-col gap-4 p-4 text-base">
-      <div className="text-gray-5 border-gray-4 flex gap-3 border-b pb-3">
+    <div className="h-full flex flex-col gap-4 p-4 text-base">
+      <div className="text-gray-5 border-gray-4 flex gap-3 border-b py-2">
         <button className="hover:text-main hover:border-main rounded-2xl border px-2 py-1">
           통계차트
         </button>
@@ -37,7 +47,8 @@ export default function Mypage() {
           프로필설정
         </button>
       </div>
-      <div>
+      
+      <div className='grow flex flex-col '>
         {/* 버튼리스트: 교체예정 */}
         <div className="text-gray-5 flex justify-center gap-20">
           <div className="hover:text-main">
@@ -51,21 +62,26 @@ export default function Mypage() {
 
         <div className='md:flex md:gap-3'>
 
-          <div className="grow basis-0 flex flex-col items-center">
+          <div className="grow basis-0 flex flex-col items-center p-2">
             <div className="size-40">
               <CategoryChart categoryList={data1} />
             </div>
             <CategoryList categoryList={data1} />
           </div>
 
-          <div className="grow basis-0 flex flex-col items-center">
+          <div className="grow basis-0 flex flex-col items-center p-2">
             <div className="size-40">
               <CategoryChart categoryList={data2} />
             </div>
             <CategoryList categoryList={data2} />
           </div>
         </div>
+
+        <div className='grow'>
+          <PeriodBarChart periodList={bardata}/>
+        </div>
       </div>
-    </main>
+
+    </div>
   );
 }
