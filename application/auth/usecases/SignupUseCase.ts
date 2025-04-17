@@ -2,7 +2,7 @@ import { SignupDto } from '@/domain/auth/dto/SignupDto';
 import { User } from '@/domain/auth/entities/User';
 import { UserRepository } from '@/domain/auth/repositories/UserRepository';
 import bcrypt from 'bcryptjs';
-import { verifyVerificationToken } from './SendCodeUseCase';
+import { verifyEmailToken } from './SendCodeUseCase';
 
 export class SignupUseCase {
   constructor(private readonly userRepository: UserRepository) {}
@@ -10,7 +10,7 @@ export class SignupUseCase {
   async execute(dto: SignupDto): Promise<User> {
     const { email, password, nickname, phone_number, token } = dto;
 
-    const payload = verifyVerificationToken(token);
+    const payload = verifyEmailToken(token);
     const verifiedEmail = payload.email;
 
     if (verifiedEmail !== email) {

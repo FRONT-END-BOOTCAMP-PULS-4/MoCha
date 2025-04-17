@@ -1,6 +1,6 @@
-import { supabase } from '@/app/shared/lib/supabase';
 import { EmailService } from '@/domain/auth/services/EmailService';
 import jwt from 'jsonwebtoken';
+import { supabase } from '@/app/shared/lib/supabase';
 
 const SECRET = process.env.JWT_SECRET!;
 
@@ -9,11 +9,13 @@ type VerificationPayload = {
   code: string;
 };
 
+// 이메일 인증용 토큰 생성 함수 - 5분 동안 유효
 export const createVerificationToken = (payload: VerificationPayload) => {
   return jwt.sign(payload, SECRET, { expiresIn: '5m' });
 };
 
-export const verifyVerificationToken = (token: string): VerificationPayload => {
+// // 이메일 인증 토큰 검증 함수 - 유효하면 payload 반환, 유효하지 않으면 예외 발생
+export const verifyEmailToken = (token: string): VerificationPayload => {
   return jwt.verify(token, SECRET) as VerificationPayload;
 };
 
