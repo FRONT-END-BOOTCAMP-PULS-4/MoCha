@@ -47,7 +47,6 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
-    console.log('로그인 버튼');
     // 유효성 검사
     const emailValid = isValidEmail(email);
     const passwordValid = password.trim().length > 0;
