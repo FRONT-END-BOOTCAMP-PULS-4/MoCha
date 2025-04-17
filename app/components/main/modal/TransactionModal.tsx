@@ -1,12 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
+import { ModalProps } from '@/app/shared/types/Calendar';
 
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
