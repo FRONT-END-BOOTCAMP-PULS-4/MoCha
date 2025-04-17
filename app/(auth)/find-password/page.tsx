@@ -5,14 +5,20 @@ import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/shared/ut
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { errorMessages } from '../signup/page';
 
 export default function FindPasswordPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+
+  const [codeSent, setCodeSent] = useState(false); // 인증번호 발송 여부
   const [isVerified, setIsVerified] = useState(false);
 
   const [password, setPassword] = useState('');
@@ -28,6 +34,7 @@ export default function FindPasswordPage() {
   const handleSendVerificationCode = async () => {
     if (!isValidEmail(email)) {
       setErrors((prev) => ({ ...prev, email: true }));
+      setCodeSent(false);
       return;
     }
 
@@ -40,9 +47,10 @@ export default function FindPasswordPage() {
 
       if (!res.ok) throw new Error('인증번호 발송 실패');
 
-      alert('인증번호가 이메일로 전송되었습니다.');
+      setCodeSent(true);
     } catch (err) {
       console.error('인증 요청 실패:', err);
+      setCodeSent(false);
     }
   };
 
@@ -100,22 +108,31 @@ export default function FindPasswordPage() {
             setEmail(e.target.value);
             setErrors((prev) => ({ ...prev, email: !isValidEmail(e.target.value) }));
           }}
-          className="mb-1 w-full"
+          className="w-full"
           error={errors.email}
           disabled={isVerified}
         />
-        <MessageZone errorMessage={errors.email ? errorMessages.email : ''} />
-        <button
-          className="mt-2 w-full rounded-md bg-blue-100 px-3 py-2"
+        <MessageZone
+          errorMessage={errors.email ? errorMessages.email : ''}
+          successMessage={
+            isValidEmail(email) && !errors.email && codeSent
+              ? '인증번호가 이메일로 전송되었습니다.'
+              : ''
+          }
+        />
+
+        <Button
+          intent={'primary'}
+          className="mt-2 w-full"
           onClick={handleSendVerificationCode}
           disabled={isVerified || !isValidEmail(email)}
         >
           인증번호 발송
-        </button>
+        </Button>
       </div>
 
       {/* 인증번호 입력 */}
-      <div className="mt-4">
+      <div className="mt-3">
         <Label label="인증번호" htmlFor="code" />
         <Input
           id="code"
@@ -125,7 +142,7 @@ export default function FindPasswordPage() {
             setCode(e.target.value);
             setErrors((prev) => ({ ...prev, code: false }));
           }}
-          className="mb-1 w-full"
+          className="w-full"
           error={errors.code}
           disabled={isVerified}
         />
@@ -133,18 +150,24 @@ export default function FindPasswordPage() {
           errorMessage={errors.code ? errorMessages.code : ''}
           successMessage={isVerified ? '인증이 완료되었습니다.' : ''}
         />
-        <button
-          className="mt-2 w-full rounded-md bg-blue-100 px-3 py-2"
+        <Button
+          intent={'primary'}
+          className="mt-2 w-full"
           onClick={handleVerifyCode}
           disabled={isVerified}
         >
           인증번호 확인
-        </button>
+        </Button>
+        {!isVerified && (
+          <Button intent={'cancel'} className="mt-4 w-full" onClick={() => router.back()}>
+            취소
+          </Button>
+        )}
       </div>
 
       {/* 인증 성공 시 비밀번호 변경 UI */}
       {isVerified && (
-        <div className="mt-6">
+        <div className="mt-3">
           <div>
             <Label label="비밀번호" htmlFor="password" />
             <Input
@@ -165,7 +188,7 @@ export default function FindPasswordPage() {
             <MessageZone errorMessage={errors.password ? errorMessages.password : ''} />
           </div>
 
-          <div className="mt-2">
+          <div className="mt-1">
             <Label label="비밀번호 확인" htmlFor="passwordCheck" />
             <Input
               id="passwordCheck"
@@ -185,15 +208,18 @@ export default function FindPasswordPage() {
             <MessageZone errorMessage={errors.passwordCheck ? errorMessages.passwordCheck : ''} />
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button className="w-full rounded-md bg-red-100 px-3 py-2">취소</button>
-            <button
-              className="w-full rounded-md bg-blue-100 px-3 py-2"
+          <div className="mt-3 flex gap-4">
+            <Button intent={'cancel'} className="w-full" onClick={() => router.back()}>
+              취소
+            </Button>
+            <Button
+              intent={'primary'}
+              className="w-full"
               onClick={handleChangePassword}
               disabled={!isValidPassword(password) || !doPasswordsMatch(password, passwordCheck)}
             >
               변경
-            </button>
+            </Button>
           </div>
         </div>
       )}

@@ -11,7 +11,7 @@ export default function Input({ className, error, type = 'text', ...props }: Inp
   return (
     <input
       className={cn(
-        'placeholder-gray-6 border px-4 py-3 text-sm',
+        'placeholder-gray-6 rounded-md border px-4 py-3 text-sm',
         error ? 'border-error' : 'border-gray-4',
         className
       )}
