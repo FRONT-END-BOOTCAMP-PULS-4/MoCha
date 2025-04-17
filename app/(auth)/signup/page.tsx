@@ -12,8 +12,10 @@ import { ChangeEvent, useState } from 'react';
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
+import { useRouter } from 'next/navigation';
 
 export const errorMessages = {
   email: '유효한 이메일 주소를 입력해주세요.',
@@ -25,6 +27,8 @@ export const errorMessages = {
 };
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [user, setUser] = useState({
     email: '',
     password: '',
@@ -232,7 +236,7 @@ export default function SignupPage() {
     <div>
       <LogoImage />
       <Title>회원가입</Title>
-      <form className="mb-4 flex flex-col gap-4">
+      <form className="mb-2 flex flex-col">
         {/* 이메일 */}
         <div>
           <Label label="이메일" htmlFor="email" />
@@ -242,16 +246,18 @@ export default function SignupPage() {
               value={user.email}
               onChange={handleInputChange}
               placeholder="이메일을 입력해주세요."
+              className="flex-1"
               error={!!errors.email}
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+              className="w-full"
               onClick={handleSendCode}
               disabled={errors.email === 'invalid' || !isValidEmail(user.email)}
             >
               인증번호 발송
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={
@@ -278,14 +284,16 @@ export default function SignupPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="인증번호를 입력해주세요."
+              className="flex-1"
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2"
+              className="w-full rounded-md"
               onClick={handleVerifyCode}
             >
               인증번호 확인
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={errors.code ? errorMessages.code : ''}
@@ -334,14 +342,15 @@ export default function SignupPage() {
               placeholder="닉네임을 입력해주세요."
               error={!!errors.nickname}
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+              className="w-full"
               onClick={handleCheckNickname}
               disabled={errors.nickname === 'invalid' || !isValidNickname(user.nickname)}
             >
               중복 확인
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={
@@ -378,14 +387,17 @@ export default function SignupPage() {
       </form>
 
       <div className="flex gap-4">
-        <button className="w-full rounded-md bg-red-100 px-3 py-2">취소</button>
-        <button
-          className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+        <Button intent={'cancel'} className="w-full" onClick={() => router.back()}>
+          취소
+        </Button>
+        <Button
+          intent={'primary'}
+          className="w-full"
           disabled={!isFormValid}
           onClick={handleSignup}
         >
           회원가입
-        </button>
+        </Button>
       </div>
     </div>
   );
