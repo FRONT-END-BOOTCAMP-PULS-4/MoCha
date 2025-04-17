@@ -1,17 +1,20 @@
 'use client';
 
+import Image from 'next/image';
+import Input from '@/app/shared/ui/input/Input';
+import Label from '@/app/shared/ui/label/Label';
+import Link from 'next/link';
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
-import Input from '@/app/shared/ui/input/Input';
-import Label from '@/app/shared/ui/label/Label';
-import { isValidEmail } from '@/app/utils/validation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
 import { errorMessages } from '../signup/page';
+import { isValidEmail } from '@/app/shared/utils/validation';
+import { useAuthStore } from '@/app/shared/stores/authStore';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
@@ -43,9 +46,9 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
+    // 유효성 검사
     const emailValid = isValidEmail(email);
     const passwordValid = password.trim().length > 0;
-
     if (!emailValid || !passwordValid) {
       setErrors((prev) => ({
         ...prev,
@@ -56,18 +59,35 @@ export default function LoginPage() {
     }
 
     try {
+      // 로그인 요청
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) {
+      const data = await res.json();
+      console.log('👉 응답 상태:', res.status);
+      console.log('👉 응답 본문:', data);
+
+      // 실패 처리
+      if (!res.ok || !data.success) {
         setErrors((prev) => ({ ...prev, login: true }));
         return;
       }
 
-      // 성공 시 처리 (예: redirect)
+      const { access_token, user } = data;
+
+      // zustand 저장
+      const { setAccessToken, setUser } = useAuthStore.getState();
+      setAccessToken(access_token);
+      setUser(user);
+
+      // localStorage 저장
+      localStorage.setItem('access_token', access_token);
+
+      // 성공 시 이동
+      router.push('/');
     } catch (error) {
       console.error('로그인 실패:', error);
       setErrors((prev) => ({ ...prev, login: true }));

@@ -1,6 +1,6 @@
 'use client';
 
-import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/utils/validation';
+import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/shared/utils/validation';
 
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
