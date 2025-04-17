@@ -28,6 +28,11 @@
   * {
     font-family: './font/Pretendard-Medium.woff2';
   }
+
+  html,body{
+    height: 100%;
+  };
+  
 }
 
 @theme {
