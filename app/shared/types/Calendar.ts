@@ -27,6 +27,5 @@ export type IncomeExpenseFormProps = {
 
 export type ModalProps = {
   isOpen: boolean;
-  onClose: () => void;
   children: ReactNode;
 };

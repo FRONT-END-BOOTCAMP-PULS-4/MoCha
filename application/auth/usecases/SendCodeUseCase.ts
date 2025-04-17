@@ -1,6 +1,6 @@
+import { supabase } from '@/app/shared/lib/supabase';
 import { EmailService } from '@/domain/auth/services/EmailService';
 import jwt from 'jsonwebtoken';
-import { supabase } from '@/app/shared/lib/supabase';
 
 const SECRET = process.env.JWT_SECRET!;
 
@@ -22,15 +22,19 @@ export const verifyEmailToken = (token: string): VerificationPayload => {
 export class SendCodeUseCase {
   constructor(private readonly emailService: EmailService) {}
 
-  async execute(email: string): Promise<string> {
+  async execute(email: string, purpose: 'signup' | 'reset-password'): Promise<string> {
     const { data: existingUser } = await supabase
       .from('user')
       .select('id')
       .eq('email', email)
       .single();
 
-    if (existingUser) {
+    if (purpose === 'signup' && existingUser) {
       throw new Error('이미 가입된 이메일입니다.');
+    }
+
+    if (purpose === 'reset-password' && !existingUser) {
+      throw new Error('존재하지 않는 계정입니다.');
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
