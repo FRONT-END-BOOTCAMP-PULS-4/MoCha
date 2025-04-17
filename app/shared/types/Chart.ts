@@ -1,21 +1,19 @@
-type IncomeCategories =
+export type IncomeCategories =
   | 'salary'
-  | 'bonus'
-  | 'interest'
-  | 'dividend'
+  | 'investment'
   | 'allowance'
-  | 'sales'
-  | 'other';
+  | 'refund';
   
-type ExpenseCategories =
+export type ExpenseCategories =
   | 'food'
   | 'housing'
   | 'transportation'
   | 'communication'
   | 'medical'
-  | 'insurance'
+  | 'shopping'
   | 'education'
-  | 'living'
+  | 'culture'
+  | 'event'
   | 'other';
 
 export type Category = {

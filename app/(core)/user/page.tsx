@@ -7,25 +7,25 @@ import { type Category, type Period } from '@/app/shared/types/Chart';
 
 export default function Mypage() {
   const data1: Category[] = [
-    { name: '급여', price: 3000000, category: 'salary' },
-    { name: '보너스', price: 500000, category: 'bonus' },
-    { name: '이자수익', price: 3000000, category: 'interest' },
-    { name: '배당수익', price: 1500000, category: 'dividend' },
-    { name: '용돈', price: 200000, category: 'allowance' },
-    { name: '판매수입', price: 50000, category: 'sales' },
-    { name: '기타', price: 210000, category: 'other' },
+    { name: '급여', price: 500000, category: 'salary' },
+    { name: '투자수익', price: 500000, category: 'investment' },
+    { name: '용동', price: 500000, category: 'allowance' },
+    { name: '환급 & 환불', price: 500000, category: 'refund' },
+    { name: '환급 & 환불', price: 500000, category: 'other' },
+    { name: '없는색상표시', price: 500000, category: 'othes' },
   ];
 
   const data2: Category[] = [
-    { name: '식비', price: 40000, category: 'food' },
-    { name: '주거비', price: 500000, category: 'housing' },
-    { name: '교통비', price: 20000, category: 'transportation' },
-    { name: '통신비', price: 50000, category: 'communication' },
-    { name: '의료비', price: 200000, category: 'medical' },
-    { name: '보험료', price: 70000, category: 'insurance' },
-    { name: '교육비', price: 400000, category: 'education' },
-    { name: '생활비', price: 1000000, category: 'living' },
-    { name: '기타', price: 50000, category: 'other' },
+    { name: '식비', price: 500000, category: 'food' },
+    { name: '생활', price: 500000, category: 'housing' },
+    { name: '교통', price: 500000, category: 'transportation' },
+    { name: '통신', price: 500000, category: 'communication' },
+    { name: '의료', price: 500000, category: 'medical' },
+    { name: '쇼핑', price: 500000, category: 'shopping' },
+    { name: '교육', price: 500000, category: 'education' },
+    { name: '문화 & 여가', price: 500000, category: 'culture' },
+    { name: '경조사', price: 500000, category: 'event' },
+    { name: '기타', price: 500000, category: 'other' },
   ];
 
   const bardata:Period[] = [
