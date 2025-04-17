@@ -32,3 +32,15 @@ export type CategoryListProps = {
     categoryList: Category[];
     className?: string;
 };
+
+export type Period = {
+  name: string;
+  income: number;
+  expense: number;
+}
+
+export type PeriodProps = {
+  periodList: Period[]
+}
+
+
