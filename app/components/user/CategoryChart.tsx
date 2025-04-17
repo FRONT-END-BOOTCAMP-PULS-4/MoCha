@@ -3,6 +3,7 @@ import { type ReactElement } from 'react';
 import dynamic from 'next/dynamic';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { type CategoryChartProps } from '@/app/shared/types/Chart';
+import { categoryColorMap } from '@/app/shared/consts/categoryColorMap';
 
 const ResponsiveContainer = dynamic(
   () => import('recharts').then((comp) => comp.ResponsiveContainer),
@@ -28,14 +29,15 @@ export default function CategoryChart(props: CategoryChartProps): ReactElement {
             innerRadius={'30%'} // 차트의 내부 반지름
             outerRadius={'100%'} // 차트의 외부 반지름
             paddingAngle={3} // 섹터간의 간격
-            fill="#000" // 차트의 전체적인 색상
+            fill="#ffffff" // 차트의 전체적인 색상
             cornerRadius={3} // 섹터의 모서리를 둥글게 만드는 반지름을 설정
           >
             {categoryList.map((item, index) => {
+              const color = categoryColorMap[item.category] || categoryColorMap.other
               return (
                 <Cell
                   key={`cell-${index}`}
-                  fill={`var(--category-${item.category})`}
+                  fill={color}
                   style={{ filter: 'drop-shadow(0px 2px 2px gray)' }}
                   strokeWidth={0}
                 />
