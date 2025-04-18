@@ -25,6 +25,7 @@ export default function FullCalendarWrapper({ daily }: FullCalendarWrapperProps)
     if (clicked) {
       setSelectedDate(formattedDate);
       setSelectedDetail(clicked);
+      document.body.style.overflow = 'hidden'; // 스크롤 방지
     } else {
       console.log('No data found for the clicked date.');
     }
@@ -45,6 +46,7 @@ export default function FullCalendarWrapper({ daily }: FullCalendarWrapperProps)
     if (clicked) {
       setSelectedDate(formattedDate);
       setSelectedDetail(clicked);
+      document.body.style.overflow = 'hidden'; // 스크롤 방지
     } else {
       console.log('No data found for the clicked date.');
     }
@@ -109,7 +111,10 @@ export default function FullCalendarWrapper({ daily }: FullCalendarWrapperProps)
           income={selectedDetail.income}
           expense={selectedDetail.expense}
           transactions={selectedDetail.transactions || []}
-          onClose={() => setSelectedDate(null)}
+          onClose={() => {
+            document.body.style.overflow = 'auto';
+            setSelectedDate(null);
+          }}
         />
       )}
       <style jsx global>{`

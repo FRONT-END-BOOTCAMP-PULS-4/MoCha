@@ -14,7 +14,7 @@ export default function DailyDetailModal({
 }: DailyDetailModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="flex h-full w-full max-w-md flex-col bg-white px-2 md:h-3/4">
+      <div className="flex h-screen w-full max-w-md flex-col bg-white px-2 md:h-3/4">
         <div className="border-b-gray-3 flex items-center justify-between border-b px-6 py-4">
           <h2 className="text-lg font-bold">{date}</h2>
           <button onClick={onClose}>
