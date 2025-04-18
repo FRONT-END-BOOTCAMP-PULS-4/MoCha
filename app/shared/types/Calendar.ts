@@ -1,9 +1,26 @@
 import { ReactNode } from 'react';
 
-type DailyData = {
+export type Transaction = {
+  id: string;
+  category: string;
+  memo?: string;
+  amount: number;
+  type: 'income' | 'expense';
+};
+
+export type DailyDetailModalProps = {
   date: string;
   income: number;
   expense: number;
+  transactions: Transaction[];
+  onClose: () => void;
+};
+
+export type DailyData = {
+  date: string;
+  income: number;
+  expense: number;
+  transactions?: Transaction[];
 };
 
 export type FullCalendarWrapperProps = {

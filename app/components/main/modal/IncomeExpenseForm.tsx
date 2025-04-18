@@ -103,12 +103,13 @@ export default function IncomeExpenseForm({ onClose }: IncomeExpenseFormProps) {
           rows={3}
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
+          maxLength={10}
         />
       </div>
 
       {/* 버튼 */}
       <div className="flex w-full gap-2 overflow-hidden rounded-lg">
-        <Button intent={'cancle'} className="flex-1" onClick={onClose}>
+        <Button intent={'cancel'} className="flex-1" onClick={onClose}>
           취소
         </Button>
         <Button intent={'primary'} className="flex-1" disabled={!isFormValid} onClick={handleSave}>
