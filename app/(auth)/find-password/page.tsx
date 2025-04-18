@@ -1,18 +1,25 @@
 'use client';
 
-import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/utils/validation';
+import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/shared/utils/validation';
 
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { errorMessages } from '../signup/page';
 
 export default function FindPasswordPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [verificationToken, setVerificationToken] = useState('');
+
+  const [codeSent, setCodeSent] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
   const [password, setPassword] = useState('');
@@ -25,33 +32,69 @@ export default function FindPasswordPage() {
     passwordCheck: false,
   });
 
+  const [serverError, setServerError] = useState('');
+
   const handleSendVerificationCode = async () => {
     if (!isValidEmail(email)) {
       setErrors((prev) => ({ ...prev, email: true }));
+      setCodeSent(false);
       return;
     }
 
     try {
-      const res = await fetch('/api/auth/send-code', {
+      const res = await fetch('/api/auth/send-code/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
-      if (!res.ok) throw new Error('인증번호 발송 실패');
+      const data = await res.json();
 
-      alert('인증번호가 이메일로 전송되었습니다.');
+      if (!res.ok) {
+        setServerError(data.error || '인증번호 발송 실패');
+        setCodeSent(false);
+        return;
+      }
+
+      setVerificationToken(data.token);
+      setServerError('');
+      setErrors((prev) => ({ ...prev, email: false }));
+      setCodeSent(true);
     } catch (err) {
       console.error('인증 요청 실패:', err);
+      setServerError('서버 오류로 인증번호 발송에 실패했습니다.');
+      setCodeSent(false);
     }
   };
 
-  const handleVerifyCode = () => {
-    if (code === '123456') {
-      setErrors((prev) => ({ ...prev, code: false }));
-      setIsVerified(true);
-    } else {
+  const handleVerifyCode = async () => {
+    if (!verificationToken || !code) {
+      setServerError('인증번호가 발송되지 않았거나 입력되지 않았습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        body: JSON.stringify({ token: verificationToken, code }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.verified) {
+        setErrors((prev) => ({ ...prev, code: false }));
+        setServerError('');
+        setIsVerified(true);
+      } else {
+        setErrors((prev) => ({ ...prev, code: true }));
+        setServerError('인증번호가 일치하지 않습니다.');
+        setIsVerified(false);
+      }
+    } catch (err) {
+      console.error('인증번호 확인 실패:', err);
       setErrors((prev) => ({ ...prev, code: true }));
+      setServerError('인증번호 확인 중 서버 오류가 발생했습니다.');
       setIsVerified(false);
     }
   };
@@ -73,14 +116,20 @@ export default function FindPasswordPage() {
       const res = await fetch('/api/auth/reset-password', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+          token: verificationToken,
+          code,
+        }),
       });
 
       if (!res.ok) throw new Error('비밀번호 변경 실패');
 
-      alert('비밀번호가 변경되었습니다.');
+      router.push('/login');
     } catch (err) {
       console.error('비밀번호 변경 실패:', err);
+      setServerError('비밀번호 변경에 실패했습니다.');
     }
   };
 
@@ -99,23 +148,33 @@ export default function FindPasswordPage() {
           onChange={(e) => {
             setEmail(e.target.value);
             setErrors((prev) => ({ ...prev, email: !isValidEmail(e.target.value) }));
+            setServerError('');
           }}
-          className="mb-1 w-full"
+          className="w-full"
           error={errors.email}
           disabled={isVerified}
         />
-        <MessageZone errorMessage={errors.email ? errorMessages.email : ''} />
-        <button
-          className="mt-2 w-full rounded-md bg-blue-100 px-3 py-2"
+        <MessageZone
+          errorMessage={serverError || (errors.email ? errorMessages.email : '')}
+          successMessage={
+            isValidEmail(email) && !errors.email && codeSent
+              ? '인증번호가 이메일로 전송되었습니다.'
+              : ''
+          }
+        />
+
+        <Button
+          intent={'primary'}
+          className="mt-2 w-full"
           onClick={handleSendVerificationCode}
           disabled={isVerified || !isValidEmail(email)}
         >
           인증번호 발송
-        </button>
+        </Button>
       </div>
 
       {/* 인증번호 입력 */}
-      <div className="mt-4">
+      <div className="mt-3">
         <Label label="인증번호" htmlFor="code" />
         <Input
           id="code"
@@ -124,8 +183,9 @@ export default function FindPasswordPage() {
           onChange={(e) => {
             setCode(e.target.value);
             setErrors((prev) => ({ ...prev, code: false }));
+            setServerError('');
           }}
-          className="mb-1 w-full"
+          className="w-full"
           error={errors.code}
           disabled={isVerified}
         />
@@ -133,18 +193,24 @@ export default function FindPasswordPage() {
           errorMessage={errors.code ? errorMessages.code : ''}
           successMessage={isVerified ? '인증이 완료되었습니다.' : ''}
         />
-        <button
-          className="mt-2 w-full rounded-md bg-blue-100 px-3 py-2"
+        <Button
+          intent={'primary'}
+          className="mt-2 w-full"
           onClick={handleVerifyCode}
           disabled={isVerified}
         >
           인증번호 확인
-        </button>
+        </Button>
+        {!isVerified && (
+          <Button intent={'cancel'} className="mt-4 w-full" onClick={() => router.back()}>
+            취소
+          </Button>
+        )}
       </div>
 
       {/* 인증 성공 시 비밀번호 변경 UI */}
       {isVerified && (
-        <div className="mt-6">
+        <div className="mt-3">
           <div>
             <Label label="비밀번호" htmlFor="password" />
             <Input
@@ -165,7 +231,7 @@ export default function FindPasswordPage() {
             <MessageZone errorMessage={errors.password ? errorMessages.password : ''} />
           </div>
 
-          <div className="mt-2">
+          <div className="mt-1">
             <Label label="비밀번호 확인" htmlFor="passwordCheck" />
             <Input
               id="passwordCheck"
@@ -185,15 +251,18 @@ export default function FindPasswordPage() {
             <MessageZone errorMessage={errors.passwordCheck ? errorMessages.passwordCheck : ''} />
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button className="w-full rounded-md bg-red-100 px-3 py-2">취소</button>
-            <button
-              className="w-full rounded-md bg-blue-100 px-3 py-2"
+          <div className="mt-3 flex gap-4">
+            <Button intent={'cancel'} className="w-full" onClick={() => router.back()}>
+              취소
+            </Button>
+            <Button
+              intent={'primary'}
+              className="w-full"
               onClick={handleChangePassword}
               disabled={!isValidPassword(password) || !doPasswordsMatch(password, passwordCheck)}
             >
               변경
-            </button>
+            </Button>
           </div>
         </div>
       )}

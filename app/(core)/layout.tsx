@@ -7,9 +7,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      <Header />
-      <div className="m-auto max-w-(--layout-w-base)">{children}</div>
+    <div className='h-full flex flex-col'>
+      <div><Header /></div>
+      <main className="m-auto max-w-(--layout-w-base) grow shrink-0">{children}</main>
     </div>
   );
 }

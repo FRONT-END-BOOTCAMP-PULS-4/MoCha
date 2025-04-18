@@ -1,12 +1,12 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../utils/cn';
 
-const buttonVariants = cva('rounded-lg py-1 px-2 cursor-pointer text-center font-medium', {
+const buttonVariants = cva('rounded-md py-1 px-2 cursor-pointer text-center font-medium', {
   variants: {
     intent: {
       default: 'bg-white text-black',
-      cancle: 'bg-gray-1 text-gray-7 ',
+      cancel: 'bg-gray-1 text-gray-7 ',
       primary: 'bg-main text-white',
       ghost: 'bg-gray-2 text-white',
       income: 'bg-income text-white',

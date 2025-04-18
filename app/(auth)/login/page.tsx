@@ -3,15 +3,19 @@
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { useAuthStore } from '@/app/shared/stores/authStore';
+import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
-import { isValidEmail } from '@/app/utils/validation';
+import { isValidEmail } from '@/app/shared/utils/validation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { errorMessages } from '../signup/page';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
@@ -43,9 +47,9 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
+    // 유효성 검사
     const emailValid = isValidEmail(email);
     const passwordValid = password.trim().length > 0;
-
     if (!emailValid || !passwordValid) {
       setErrors((prev) => ({
         ...prev,
@@ -56,18 +60,33 @@ export default function LoginPage() {
     }
 
     try {
+      // 로그인 요청
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) {
+      const data = await res.json();
+
+      // 실패 처리
+      if (!res.ok || !data.success) {
         setErrors((prev) => ({ ...prev, login: true }));
         return;
       }
 
-      // 성공 시 처리 (예: redirect)
+      const { access_token, user } = data;
+
+      // zustand 저장
+      const { setAccessToken, setUser } = useAuthStore.getState();
+      setAccessToken(access_token);
+      setUser(user);
+
+      // localStorage 저장
+      localStorage.setItem('access_token', access_token);
+
+      // 성공 시 이동
+      router.push('/');
     } catch (error) {
       console.error('로그인 실패:', error);
       setErrors((prev) => ({ ...prev, login: true }));
@@ -79,7 +98,13 @@ export default function LoginPage() {
       <LogoImage />
       <Title>로그인</Title>
 
-      <form className="mb-4 flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="mb-4 flex flex-col"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleLogin();
+        }}
+      >
         {/* 이메일 */}
         <div>
           <Label label="이메일" htmlFor="email" />
@@ -116,18 +141,19 @@ export default function LoginPage() {
             }
           />
         </div>
+        {/* 로그인 버튼 */}
+        <div className="mt-2">
+          <Button
+            intent={'primary'}
+            type="submit"
+            className="w-full"
+            disabled={!isFormValid}
+            onClick={handleLogin}
+          >
+            로그인
+          </Button>
+        </div>
       </form>
-
-      {/* 로그인 버튼 */}
-      <div className="mb-4">
-        <button
-          className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
-          disabled={!isFormValid}
-          onClick={handleLogin}
-        >
-          로그인
-        </button>
-      </div>
 
       {/* 하단 링크 */}
       <div className="flex justify-center gap-4 text-sm">
@@ -152,7 +178,7 @@ export default function LoginPage() {
           <div className="border-gray-2 flex-grow border-t" />
         </div>
 
-        <div className="mt-2 flex flex-col justify-center gap-4">
+        <div className="flex flex-col justify-center gap-4">
           <button className="border-gray-3 flex justify-center gap-2 rounded-md border bg-white px-4 py-3">
             <Image
               src="/images/social/google-logo.svg"

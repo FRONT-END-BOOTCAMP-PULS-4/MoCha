@@ -99,7 +99,7 @@ const mockData: { summary: { totalIncome: number; totalExpense: number }; daily:
           id: '12',
           category: '식비',
           memo: '간식',
-          amount: 2000,
+          amount: 20700,
           type: 'expense',
         },
       ],
@@ -116,7 +116,7 @@ export default function Home() {
       <FullCalendarWrapper daily={mockData.daily} />
       <FloatingButton onClick={() => setIsModalOpen(true)} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <Modal isOpen={isModalOpen}>
         <IncomeExpenseForm onClose={() => setIsModalOpen(false)} />
       </Modal>
     </div>

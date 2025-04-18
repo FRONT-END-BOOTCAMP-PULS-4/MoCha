@@ -6,14 +6,16 @@ import {
   isValidNickname,
   isValidPassword,
   isValidPhoneNumber,
-} from '@/app/utils/validation';
+} from '@/app/shared/utils/validation';
 import { ChangeEvent, useState } from 'react';
 
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
+import { useRouter } from 'next/navigation';
 
 export const errorMessages = {
   email: '유효한 이메일 주소를 입력해주세요.',
@@ -25,6 +27,8 @@ export const errorMessages = {
 };
 
 export default function SignupPage() {
+  const router = useRouter();
+
   const [user, setUser] = useState({
     email: '',
     password: '',
@@ -34,8 +38,12 @@ export default function SignupPage() {
   });
 
   const [code, setCode] = useState('');
-  const [isCodeVerified, setIsCodeVerified] = useState(false);
-  const [isNicknameVerified, setIsNicknameVerified] = useState(false);
+  const [codeSent, setCodeSent] = useState(false); // 인증번호 발송 여부
+
+  const [verificationToken, setVerificationToken] = useState(''); // 서버에서 보내준 인증 코드
+
+  const [isCodeVerified, setIsCodeVerified] = useState(false); // 인증번호 확인 여부
+  const [isNicknameVerified, setIsNicknameVerified] = useState(false); // 닉네임 중복 확인 여부
 
   const [errors, setErrors] = useState({
     email: '', // '' | 'invalid' | 'duplicated'
@@ -56,12 +64,22 @@ export default function SignupPage() {
         const newErrors = { ...prevErr };
 
         if (id === 'email') newErrors.email = isValidEmail(value) ? '' : 'invalid';
-        if (id === 'nickname') {
-          newErrors.nickname = isValidNickname(value) ? '' : 'invalid';
-          setIsNicknameVerified(false); // 닉네임 바뀌면 초기화
+
+        if (id === 'password') {
+          newErrors.password = !isValidPassword(value);
         }
+
         if (id === 'passwordCheck') {
           newErrors.passwordCheck = !doPasswordsMatch(updatedUser.password, value);
+        }
+
+        if (id === 'nickname') {
+          newErrors.nickname = isValidNickname(value) ? '' : 'invalid';
+          setIsNicknameVerified(false);
+        }
+
+        if (id === 'phoneNumber') {
+          newErrors.phoneNumber = !isValidPhoneNumber(value);
         }
 
         return newErrors;
@@ -71,30 +89,11 @@ export default function SignupPage() {
     });
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-
-    switch (id) {
-      case 'email':
-        setErrors((prev) => ({ ...prev, email: !isValidEmail(value) ? 'invalid' : '' }));
-        break;
-      case 'password':
-        setErrors((prev) => ({ ...prev, password: !isValidPassword(value) }));
-        break;
-      case 'nickname':
-        setErrors((prev) => ({ ...prev, nickname: !isValidNickname(value) ? 'invalid' : '' }));
-        break;
-      case 'phoneNumber':
-        setErrors((prev) => ({ ...prev, phoneNumber: !isValidPhoneNumber(value) }));
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleSendVerificationCode = async () => {
+  // 인증번호 발송
+  const handleSendCode = async () => {
     if (errors.email || !isValidEmail(user.email)) {
       setErrors((prev) => ({ ...prev, email: 'invalid' }));
+      setCodeSent(false);
       return;
     }
 
@@ -105,21 +104,50 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
       });
 
+      const data = await res.json();
+
       if (res.status === 409) {
         setErrors((prev) => ({ ...prev, email: 'duplicated' }));
-      } else {
+        setCodeSent(false);
+      } else if (res.ok && data.token) {
+        setVerificationToken(data.token);
         setErrors((prev) => ({ ...prev, email: '' }));
+        setCodeSent(true);
       }
     } catch (err) {
       console.error('이메일 인증 요청 실패:', err);
+      setCodeSent(false);
     }
   };
 
-  const handleVerifyCode = () => {
-    if (code === '123456') {
-      setErrors((prev) => ({ ...prev, code: false }));
-      setIsCodeVerified(true);
-    } else {
+  // 인증번호 확인
+  const handleVerifyCode = async () => {
+    if (!verificationToken || !code) {
+      alert('인증번호가 발송되지 않았거나 입력되지 않았습니다.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        body: JSON.stringify({
+          token: verificationToken,
+          code: code,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.verified) {
+        setErrors((prev) => ({ ...prev, code: false }));
+        setIsCodeVerified(true);
+      } else {
+        setErrors((prev) => ({ ...prev, code: true }));
+        setIsCodeVerified(false);
+      }
+    } catch (err) {
+      console.error('인증번호 확인 실패:', err);
       setErrors((prev) => ({ ...prev, code: true }));
       setIsCodeVerified(false);
     }
@@ -136,18 +164,23 @@ export default function SignupPage() {
     try {
       const res = await fetch('/api/auth/check-nickname', {
         method: 'POST',
-        body: JSON.stringify({ nickname: user.nickname }),
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: user.nickname }),
       });
 
       if (res.status === 409) {
         setErrors((prev) => ({ ...prev, nickname: 'duplicated' }));
-      } else {
+        setIsNicknameVerified(false);
+      } else if (res.ok) {
         setErrors((prev) => ({ ...prev, nickname: '' }));
         setIsNicknameVerified(true);
+      } else {
+        console.error('닉네임 중복 확인 실패:', await res.json());
+        setErrors((prev) => ({ ...prev, nickname: 'invalid' }));
       }
     } catch (err) {
-      console.error('닉네임 확인 실패:', err);
+      console.error('닉네임 확인 중 서버 오류:', err);
+      setErrors((prev) => ({ ...prev, nickname: 'invalid' }));
     }
   };
 
@@ -162,30 +195,37 @@ export default function SignupPage() {
     !errors.nickname &&
     isValidPhoneNumber(user.phoneNumber) &&
     !errors.phoneNumber &&
-    isCodeVerified;
+    isCodeVerified &&
+    isNicknameVerified;
 
   const handleSignup = async () => {
-    if (!isFormValid) return;
+    if (!isFormValid || !verificationToken) {
+      return;
+    }
 
     try {
-      const res = await fetch('/api/members', {
+      const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: user.email,
           password: user.password,
           nickname: user.nickname,
-          phoneNumber: user.phoneNumber,
+          phone_number: user.phoneNumber,
+          token: verificationToken,
         }),
       });
 
-      if (!res.ok) {
-        alert('회원가입에 실패했습니다.');
+      const data = await res.json();
+      console.log('data: ', data);
+
+      if (!res.ok || !data.success) {
+        alert(data.error || '회원가입에 실패했습니다.');
         return;
       }
 
       alert('회원가입이 완료되었습니다!');
-      // router.push('/login');
+      // router.push("/login");
     } catch (error) {
       console.error('회원가입 요청 오류:', error);
       alert('서버 오류로 회원가입에 실패했습니다.');
@@ -196,7 +236,7 @@ export default function SignupPage() {
     <div>
       <LogoImage />
       <Title>회원가입</Title>
-      <form className="mb-4 flex flex-col gap-4">
+      <form className="mb-2 flex flex-col">
         {/* 이메일 */}
         <div>
           <Label label="이메일" htmlFor="email" />
@@ -205,18 +245,19 @@ export default function SignupPage() {
               id="email"
               value={user.email}
               onChange={handleInputChange}
-              onBlur={handleBlur}
               placeholder="이메일을 입력해주세요."
+              className="flex-1"
               error={!!errors.email}
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
-              onClick={handleSendVerificationCode}
+              className="w-full"
+              onClick={handleSendCode}
               disabled={errors.email === 'invalid' || !isValidEmail(user.email)}
             >
               인증번호 발송
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={
@@ -225,6 +266,11 @@ export default function SignupPage() {
                 : errors.email === 'duplicated'
                   ? '이미 존재하는 계정입니다.'
                   : ''
+            }
+            successMessage={
+              isValidEmail(user.email) && errors.email === '' && codeSent
+                ? '인증번호가 발송되었습니다.'
+                : ''
             }
           />
         </div>
@@ -238,14 +284,16 @@ export default function SignupPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="인증번호를 입력해주세요."
+              className="flex-1"
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2"
+              className="w-full rounded-md"
               onClick={handleVerifyCode}
             >
               인증번호 확인
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={errors.code ? errorMessages.code : ''}
@@ -260,7 +308,6 @@ export default function SignupPage() {
             id="password"
             value={user.password}
             onChange={handleInputChange}
-            onBlur={handleBlur}
             placeholder="비밀번호를 입력해주세요."
             className="w-full"
             type="password"
@@ -292,18 +339,18 @@ export default function SignupPage() {
               id="nickname"
               value={user.nickname}
               onChange={handleInputChange}
-              onBlur={handleBlur}
               placeholder="닉네임을 입력해주세요."
               error={!!errors.nickname}
             />
-            <button
+            <Button
+              intent={'primary'}
               type="button"
-              className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+              className="w-full"
               onClick={handleCheckNickname}
               disabled={errors.nickname === 'invalid' || !isValidNickname(user.nickname)}
             >
               중복 확인
-            </button>
+            </Button>
           </div>
           <MessageZone
             errorMessage={
@@ -331,7 +378,6 @@ export default function SignupPage() {
             id="phoneNumber"
             value={user.phoneNumber}
             onChange={handleInputChange}
-            onBlur={handleBlur}
             placeholder="전화번호를 입력해주세요."
             className="w-full"
             error={errors.phoneNumber}
@@ -341,14 +387,17 @@ export default function SignupPage() {
       </form>
 
       <div className="flex gap-4">
-        <button className="w-full rounded-md bg-red-100 px-3 py-2">취소</button>
-        <button
-          className="w-full rounded-md bg-blue-100 px-3 py-2 disabled:opacity-50"
+        <Button intent={'cancel'} className="w-full" onClick={() => router.back()}>
+          취소
+        </Button>
+        <Button
+          intent={'primary'}
+          className="w-full"
           disabled={!isFormValid}
           onClick={handleSignup}
         >
           회원가입
-        </button>
+        </Button>
       </div>
     </div>
   );

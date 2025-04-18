@@ -109,7 +109,7 @@ export default function IncomeExpenseForm({ onClose }: IncomeExpenseFormProps) {
 
       {/* 버튼 */}
       <div className="flex w-full gap-2 overflow-hidden rounded-lg">
-        <Button intent={'cancle'} className="flex-1" onClick={onClose}>
+        <Button intent={'cancel'} className="flex-1" onClick={onClose}>
           취소
         </Button>
         <Button intent={'primary'} className="flex-1" disabled={!isFormValid} onClick={handleSave}>

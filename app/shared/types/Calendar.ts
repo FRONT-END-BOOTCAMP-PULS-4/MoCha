@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export type Transaction = {
   id: string;
   category: string;
@@ -38,4 +40,9 @@ export type FloatingButtonProps = {
 
 export type IncomeExpenseFormProps = {
   onClose: () => void;
+};
+
+export type ModalProps = {
+  isOpen: boolean;
+  children: ReactNode;
 };
