@@ -103,6 +103,7 @@ export default function IncomeExpenseForm({ onClose }: IncomeExpenseFormProps) {
           rows={3}
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
+          maxLength={10}
         />
       </div>
 
