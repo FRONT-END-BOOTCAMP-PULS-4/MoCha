@@ -2,7 +2,6 @@
 
 import { DailyDetailModalProps } from '@/app/shared/types/Calendar';
 import { X } from 'lucide-react';
-import { useEffect } from 'react';
 import SummaryHeader from '../SummaryHeader';
 import TransactionItem from './TransactionItem';
 
@@ -13,12 +12,6 @@ export default function DailyDetailModal({
   transactions,
   onClose,
 }: DailyDetailModalProps) {
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [onClose]);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="flex h-full w-full max-w-md flex-col bg-white px-2 md:h-3/4">
