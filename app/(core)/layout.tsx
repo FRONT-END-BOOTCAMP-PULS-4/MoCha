@@ -9,7 +9,7 @@ export default function MainLayout({
   return (
     <div className='h-full flex flex-col'>
       <div><Header /></div>
-      <main className="m-auto max-w-(--layout-w-base) grow shrink-0">{children}</main>
+      <main className="max-w-(--layout-w-base) grow shrink-0">{children}</main>
     </div>
   );
 }

@@ -14,7 +14,6 @@ const ResponsiveContainer = dynamic(
 
 export default function PeriodBarChart(props: PeriodProps): ReactElement {
   const { periodList } = props;
-  
 
   return (
     <ResponsiveContainer width={'100%'} height={'100%'}>
