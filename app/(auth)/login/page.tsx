@@ -72,7 +72,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setStatus((prev) => ({ ...prev, login: 'error' }));
+        setStatus((prev) => ({ ...prev, login: 'invalid' }));
         return;
       }
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
           <MessageZone
             errorMessages={[
               status.password === 'invalid' ? getFieldMessage('password', 'invalid') : '',
-              status.login === 'error' ? getFieldMessage('login', 'error') : '',
+              status.login === 'invalid' ? getFieldMessage('login', 'invalid') : '',
             ].filter(Boolean)}
           />
         </div>
@@ -161,7 +161,7 @@ export default function LoginPage() {
           아이디 찾기
         </Link>
         <span>|</span>
-        <Link href="/find-password" className="hover:cursor-pointer">
+        <Link href="/reset-password" className="hover:cursor-pointer">
           비밀번호 찾기
         </Link>
       </div>
