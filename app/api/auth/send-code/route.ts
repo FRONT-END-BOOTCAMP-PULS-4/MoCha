@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { SendEmailCodeUseCase } from '@/application/auth/usecase/SendEmailCodeUseCase';
+import { SendCodeUseCase } from '@/application/auth/usecase/SendCodeUseCase';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: '이메일이 필요합니다.' }, { status: 400 });
     }
 
-    const usecase = new SendEmailCodeUseCase();
+    const usecase = new SendCodeUseCase();
     const { token } = await usecase.execute({ email });
 
     return NextResponse.json({ success: true, token }, { status: 200 });

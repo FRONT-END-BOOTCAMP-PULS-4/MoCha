@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { VerifyEmailCodeUseCase } from '@/application/auth/usecase/VerifyEmailCodeUseCase';
+import { VerifyCodeUseCase } from '@/application/auth/usecase/VerifyCodeUseCase';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const usecase = new VerifyEmailCodeUseCase();
+    const usecase = new VerifyCodeUseCase();
     const result = await usecase.execute({ token, code });
 
     return NextResponse.json({ success: true, ...result }, { status: 200 });
