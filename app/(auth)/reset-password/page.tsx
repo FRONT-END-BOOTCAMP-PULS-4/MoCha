@@ -5,12 +5,13 @@ import { doPasswordsMatch, isValidEmail, isValidPassword } from '@/app/shared/ut
 import LogoImage from '@/app/components/auth/LogoImage';
 import MessageZone from '@/app/components/auth/MessageZone';
 import Title from '@/app/components/auth/Title';
+import { getFieldMessage } from '@/app/shared/constants/errorMessages';
+import { FieldStatus } from '@/app/shared/types/FormStatus';
 import { Button } from '@/app/shared/ui/button/Button';
 import Input from '@/app/shared/ui/input/Input';
 import Label from '@/app/shared/ui/label/Label';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { errorMessages } from '../signup/page';
 
 export default function FindPasswordPage() {
   const router = useRouter();
@@ -19,25 +20,21 @@ export default function FindPasswordPage() {
   const [code, setCode] = useState('');
   const [verificationToken, setVerificationToken] = useState('');
 
-  const [codeSent, setCodeSent] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
 
-  const [errors, setErrors] = useState({
-    email: false,
-    code: false,
-    password: false,
-    passwordCheck: false,
+  const [status, setStatus] = useState({
+    email: 'none',
+    code: 'none',
+    password: 'none',
+    passwordCheck: 'none',
   });
-
-  const [serverError, setServerError] = useState('');
 
   const handleSendVerificationCode = async () => {
     if (!isValidEmail(email)) {
-      setErrors((prev) => ({ ...prev, email: true }));
-      setCodeSent(false);
+      setStatus((prev) => ({ ...prev, email: 'invalid' }));
       return;
     }
 
@@ -51,25 +48,22 @@ export default function FindPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setServerError(data.error || '인증번호 발송 실패');
-        setCodeSent(false);
+        setStatus((prev) => ({ ...prev, email: 'error' }));
+
         return;
       }
 
       setVerificationToken(data.token);
-      setServerError('');
-      setErrors((prev) => ({ ...prev, email: false }));
-      setCodeSent(true);
+      setStatus((prev) => ({ ...prev, email: 'success' }));
     } catch (err) {
       console.error('인증 요청 실패:', err);
-      setServerError('서버 오류로 인증번호 발송에 실패했습니다.');
-      setCodeSent(false);
+      setStatus((prev) => ({ ...prev, email: 'error' }));
     }
   };
 
   const handleVerifyCode = async () => {
     if (!verificationToken || !code) {
-      setServerError('인증번호가 발송되지 않았거나 입력되지 않았습니다.');
+      setStatus((prev) => ({ ...prev, code: 'invalid' }));
       return;
     }
 
@@ -83,18 +77,15 @@ export default function FindPasswordPage() {
       const data = await res.json();
 
       if (res.ok && data.verified) {
-        setErrors((prev) => ({ ...prev, code: false }));
-        setServerError('');
+        setStatus((prev) => ({ ...prev, code: 'success' }));
         setIsVerified(true);
       } else {
-        setErrors((prev) => ({ ...prev, code: true }));
-        setServerError('인증번호가 일치하지 않습니다.');
+        setStatus((prev) => ({ ...prev, code: 'invalid' }));
         setIsVerified(false);
       }
     } catch (err) {
       console.error('인증번호 확인 실패:', err);
-      setErrors((prev) => ({ ...prev, code: true }));
-      setServerError('인증번호 확인 중 서버 오류가 발생했습니다.');
+      setStatus((prev) => ({ ...prev, code: 'error' }));
       setIsVerified(false);
     }
   };
@@ -104,17 +95,17 @@ export default function FindPasswordPage() {
     const passwordMatch = doPasswordsMatch(password, passwordCheck);
 
     if (!passwordValid || !passwordMatch) {
-      setErrors({
-        ...errors,
-        password: !passwordValid,
-        passwordCheck: !passwordMatch,
-      });
+      setStatus((prev) => ({
+        ...prev,
+        password: passwordValid ? 'valid' : 'invalid',
+        passwordCheck: passwordMatch ? 'valid' : 'invalid',
+      }));
       return;
     }
 
     try {
       const res = await fetch('/api/auth/reset-password', {
-        method: 'PATCH',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
@@ -129,7 +120,7 @@ export default function FindPasswordPage() {
       router.push('/login');
     } catch (err) {
       console.error('비밀번호 변경 실패:', err);
-      setServerError('비밀번호 변경에 실패했습니다.');
+      setStatus((prev) => ({ ...prev, password: 'error' }));
     }
   };
 
@@ -147,22 +138,23 @@ export default function FindPasswordPage() {
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            setErrors((prev) => ({ ...prev, email: !isValidEmail(e.target.value) }));
-            setServerError('');
+            setStatus((prev) => ({
+              ...prev,
+              email: isValidEmail(e.target.value) ? 'valid' : 'invalid',
+            }));
           }}
           className="w-full"
-          error={errors.email}
+          error={['invalid', 'error'].includes(status.email)}
           disabled={isVerified}
         />
         <MessageZone
-          errorMessage={serverError || (errors.email ? errorMessages.email : '')}
-          successMessage={
-            isValidEmail(email) && !errors.email && codeSent
-              ? '인증번호가 이메일로 전송되었습니다.'
-              : ''
+          errorMessages={
+            ['invalid', 'error'].includes(status.email)
+              ? [getFieldMessage('email', status.email as FieldStatus)]
+              : []
           }
+          successMessages={status.email === 'success' ? [getFieldMessage('email', 'success')] : []}
         />
-
         <Button
           intent={'primary'}
           className="mt-2 w-full"
@@ -182,16 +174,20 @@ export default function FindPasswordPage() {
           value={code}
           onChange={(e) => {
             setCode(e.target.value);
-            setErrors((prev) => ({ ...prev, code: false }));
-            setServerError('');
+            setStatus((prev) => ({ ...prev, code: 'none' }));
           }}
+          maxLength={6}
           className="w-full"
-          error={errors.code}
+          error={['invalid', 'error'].includes(status.code)}
           disabled={isVerified}
         />
         <MessageZone
-          errorMessage={errors.code ? errorMessages.code : ''}
-          successMessage={isVerified ? '인증이 완료되었습니다.' : ''}
+          errorMessages={
+            ['invalid', 'error'].includes(status.code)
+              ? [getFieldMessage('code', status.code as FieldStatus)]
+              : []
+          }
+          successMessages={status.code === 'success' ? [getFieldMessage('code', 'success')] : []}
         />
         <Button
           intent={'primary'}
@@ -220,15 +216,21 @@ export default function FindPasswordPage() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setErrors((prev) => ({
+                setStatus((prev) => ({
                   ...prev,
-                  password: !isValidPassword(e.target.value),
+                  password: isValidPassword(e.target.value) ? 'valid' : 'invalid',
                 }));
               }}
               className="w-full"
-              error={errors.password}
+              error={status.password === 'invalid' || status.password === 'error'}
             />
-            <MessageZone errorMessage={errors.password ? errorMessages.password : ''} />
+            <MessageZone
+              errorMessages={
+                ['invalid', 'error'].includes(status.password)
+                  ? [getFieldMessage('password', status.password as FieldStatus)]
+                  : []
+              }
+            />
           </div>
 
           <div className="mt-1">
@@ -240,15 +242,21 @@ export default function FindPasswordPage() {
               value={passwordCheck}
               onChange={(e) => {
                 setPasswordCheck(e.target.value);
-                setErrors((prev) => ({
+                setStatus((prev) => ({
                   ...prev,
-                  passwordCheck: !doPasswordsMatch(password, e.target.value),
+                  passwordCheck: doPasswordsMatch(password, e.target.value) ? 'valid' : 'invalid',
                 }));
               }}
               className="w-full"
-              error={errors.passwordCheck}
+              error={status.passwordCheck === 'invalid'}
             />
-            <MessageZone errorMessage={errors.passwordCheck ? errorMessages.passwordCheck : ''} />
+            <MessageZone
+              errorMessages={
+                status.passwordCheck === 'invalid'
+                  ? [getFieldMessage('passwordCheck', 'invalid')]
+                  : []
+              }
+            />
           </div>
 
           <div className="mt-3 flex gap-4">

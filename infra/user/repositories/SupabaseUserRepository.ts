@@ -40,6 +40,15 @@ export class SupabaseUserRepository implements UserRepository {
     return data as User;
   }
 
+  async updatePasswordByEmail(email: string, hashedPassword: string): Promise<void> {
+    const { error } = await supabase
+      .from('user')
+      .update({ password: hashedPassword })
+      .eq('email', email);
+
+    if (error) throw new Error('비밀번호 변경에 실패했습니다.');
+  }
+
   async create(user: Omit<User, 'id'>): Promise<User> {
     const { data, error } = await supabase.from('user').insert(user).select().single();
 
