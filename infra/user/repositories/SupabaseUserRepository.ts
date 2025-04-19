@@ -28,6 +28,18 @@ export class SupabaseUserRepository implements UserRepository {
     return data as User;
   }
 
+  async findByNicknameAndPhone(nickname: string, phoneNumber: string): Promise<User | null> {
+    const { data, error } = await supabase
+      .from('user')
+      .select('*')
+      .eq('nickname', nickname)
+      .eq('phone_number', phoneNumber)
+      .single();
+
+    if (error || !data) return null;
+    return data as User;
+  }
+
   async create(user: Omit<User, 'id'>): Promise<User> {
     const { data, error } = await supabase.from('user').insert(user).select().single();
 

@@ -5,6 +5,6 @@ export interface User {
   nickname: string;
   phone_number: string;
   provider: number;
-  created_at: string;
+  created_at?: string;
   deleted_at?: string;
 }
